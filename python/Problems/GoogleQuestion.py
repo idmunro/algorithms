@@ -1,0 +1,1 @@
+# Given an array, you and one other competitor take turns taking a value from the ends. Trying to maximize the total value for yourself.
