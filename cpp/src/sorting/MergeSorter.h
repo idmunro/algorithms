@@ -8,8 +8,8 @@
 
 // typedef unsigned long long size_t;
 
-template<typename T>
-class MergeSorter : public Sorter<T> 
+template<typename RandomAccessIterator>
+class MergeSorter : public Sorter<RandomAccessIterator> 
 {
 
     public:
@@ -18,89 +18,113 @@ class MergeSorter : public Sorter<T>
             std::cout << "hello" << std::endl;
         }
 
-        T& sort(T &data, size_t start, size_t end, Method m = Method::RECURSIVE) const 
+        void sort(RandomAccessIterator begin, RandomAccessIterator end, 
+                Method m = Method::RECURSIVE) const 
         {
             if(m == Method::RECURSIVE)
             {
-                sort_recursive(data, start, end);
+                sort_recursive(begin, end);
             }
             else if(m == Method::ITERATIVE)
             {
-                sort_iterative(data, start, end);
+                // sort_iterative(begin, end);
             }
-            return data;
+            return;
         }
 
     private:
 
-        T& sort_recursive(T &data, size_t start, size_t end) const
+        void sort_recursive(RandomAccessIterator begin, RandomAccessIterator end) const
         {
-            if(start == end) return data;
-            size_t mid = start + ((end - start) / 2);
-            sort_recursive(data, start, mid);
-            sort_recursive(data, mid+1, end);
-            sort_recursive(data, start, mid, mid+1, end);
-            return data;
+            if(begin == end) return;
+            auto mid = begin + ((end - begin) / 2);
+            sort_recursive(begin, mid);
+            sort_recursive(mid+1, end);
+            sort_recursive(begin, mid, mid+1, end);
+            return;
         }
-        T& sort_recursive(T &data, size_t s1, size_t e1, size_t s2, size_t e2) const 
+        void sort_recursive(RandomAccessIterator b1, RandomAccessIterator e1, 
+                          RandomAccessIterator b2, RandomAccessIterator e2) const 
         {
-            if (s1 == s2) 
+            if (b1 != b2)
             {
-                return data;
-            }
-            else
-            {
-                for(int i=s1; i<=e1;) 
+                for(auto left=b1, left_end=e1, right=b2, right_end=e2; left <= left_end && right <= right_end;) 
                 {
-                    for(int j=s2; j<=e2 && i<=e1;)
+                    for(auto right=b2; right <= right_end;)
                     {
-                        if(data[i] <= data[j])
+                        if((*left) <= (*right))
                         {
-                            ++j;
+                            ++right;
                         }
-                        else if(data[i] > data[j])
+                        else
                         {
-                            auto temp = data[i];
-                            data[i] = data[j];
-                            data[j] = temp;
-                            ++i;
+                            std::swap(*left, *right);
+                            ++left;
                         }
                     }
-                    ++i;
+                    ++left;
                 }
             }
-            return data;
+            return;
         }
 
-        T& sort_iterative(T &data, size_t start, size_t end) const 
+        void sort_iterative(RandomAccessIterator begin, RandomAccessIterator end) const 
         {
-            int split = 2;
-            int data_size = (end - start) + 1;
-            for(int split = 2; split < data_size; split *= 2)
+            int split_size = 2;
+            while(split_size < std::distance(begin, end))
             {
-                int split_start = start;
-                for(int i=start; i < end; i=split_start+split)
+                auto split_start = begin;
+                for(auto left = begin; left < end; left = split_start + split_size)
                 {
-                    split_start = i;
-                    int mid = (i + split) / 2;
-                    for(int j = i; j < split_start+split && j <= end;)
+                    split_size = left;
+                    auto mid = left + (split_size / 2);
+                    for(auto right = mid; right < split_start + split_size && right <= end;)
                     {
-                        if(data[i] <= data[j])
+                        if((*left) <= (*right))
                         {
-                            ++j;
+                            ++right;
                         }
-                        else if(data[i] > data[j])
+                        else
                         {
-                            auto temp = data[i];
-                            data[i] = data[j];
-                            data[j] = temp;
-                            ++i;
+                            std::swap(*left, *right);
+                            ++left;
                         }
                     }
+                    ++left;
                 }
+                split_size *= 2;
             }
-            return data;
         }
+
+        // void sort_iterative(RandomAccessIterator begin, RandomAccessIterator end) const 
+        // {
+        //     int split = 2;
+        //     int data_size = (end - start) + 1;
+        //     for(int split = 2; split < data_size; split *= 2)
+        //     {
+        //         int split_start = start;
+        //         for(int i=start; i < end; i=split_start+split)
+        //         {
+        //             split_start = i;
+        //             int mid = (i + split) / 2;
+        //             for(int j = i; j < split_start+split && j <= end;)
+        //             {
+        //                 if(data[i] <= data[j])
+        //                 {
+        //                     ++j;
+        //                 }
+        //                 else if(data[i] > data[j])
+        //                 {
+        //                     auto temp = data[i];
+        //                     data[i] = data[j];
+        //                     data[j] = temp;
+        //                     ++i;
+        //                 }
+        //             }
+        //         }
+        //     }
+        //     return data;
+        // }
 
 };
 

@@ -11,7 +11,7 @@ class Quicksort : public Sorter<T>
 
             // Start Sorting
 
-            // Select Pivot
+            // Select Pivot and get sorted index
             T& pivot = end;
 
             // Call Paritition
@@ -19,39 +19,41 @@ class Quicksort : public Sorter<T>
             // Repeat
         }
 
-        T& partition(T& data, size_t start, size_t end, size_t pivot_index)
+        T& partition(T& data, size_t start, size_t end)
         {
-            T& pivot = data[pivot_index];
+            T& pivot = data[end];
 
-            while(i < pivot && j < end)
+            // while(i < pivot && j < end)
+            // {
+            //     while(data[i] < pivot && i < pivot)
+            //     {
+            //         ++i;
+            //     }
+            //     while(data[j] > pivot && j < end)
+            //     {
+            //         ++j;
+            //     }
+                
+            // }
+            while(i < j && j < end)
             {
-                while(data[i] < pivot)
+                if(data[i] < pivot && data[j] > pivot)
                 {
-                    
+                    ++i; ++j;
                 }
-            }
-            for(int i=start; i<pivot_index;)
-            {
-                for(int j=pivot_index+1; j<end;)
+                else if(data[i] > pivot && data[j] > pivot)
                 {
-                    if(data[i] < pivot && data[j] > pivot)
-                    {
-                        ++i; ++j;
-                    }
-                    else if(data[i] > pivot && data[j] > pivot)
-                    {
-                        
-                    }
-                    else if(data[i] > pivot && data[j] < pivot)
-                    {
-
-                    }
-                    else 
-                    {
-                        ++i;
-                        ++j;
-                    }
-
+                    ++j;
+                }
+                else if(data[i] < pivot && data[j] < pivot)
+                {
+                    ++i;
+                }
+                else 
+                {
+                    std::swap(&data[i], &data[j])
+                    ++i;
+                    ++j;
                 }
             }
         }
